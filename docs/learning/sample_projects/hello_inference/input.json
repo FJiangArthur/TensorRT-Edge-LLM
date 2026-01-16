@@ -1,0 +1,15 @@
+{
+    "batch_size": 1,
+    "temperature": 0.7,
+    "top_p": 0.9,
+    "top_k": 40,
+    "max_generate_length": 100,
+    "requests": [
+        {
+            "system_prompt": "You are a helpful assistant. Be concise.",
+            "messages": [
+                {"role": "user", "content": "What is machine learning in one sentence?"}
+            ]
+        }
+    ]
+}
