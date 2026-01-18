@@ -231,8 +231,12 @@ bool LLMBuilder::build()
     }
 
     // Create network definition
-    auto const stronglyTyped = 1U << static_cast<uint32_t>(nvinfer1::NetworkDefinitionCreationFlag::kSTRONGLY_TYPED);
-    auto network = std::unique_ptr<nvinfer1::INetworkDefinition>(builder->createNetworkV2(stronglyTyped));
+#if NV_TENSORRT_MAJOR >= 11
+    auto const networkFlags = 1U << static_cast<uint32_t>(nvinfer1::NetworkDefinitionCreationFlag::kSTRONGLY_TYPED);
+#else
+    auto const networkFlags = 0U;  // Default flags for TensorRT 10.x
+#endif
+    auto network = std::unique_ptr<nvinfer1::INetworkDefinition>(builder->createNetworkV2(networkFlags));
     if (!network)
     {
         LOG_ERROR("Failed to create network.");
@@ -270,7 +274,9 @@ bool LLMBuilder::build()
 
     // Create builder config
     auto config = std::unique_ptr<nvinfer1::IBuilderConfig>(builder->createBuilderConfig());
+#if NV_TENSORRT_MAJOR >= 11
     config->setFlag(nvinfer1::BuilderFlag::kMONITOR_MEMORY);
+#endif
     if (!config)
     {
         LOG_ERROR("Failed to create builder config.");
@@ -870,8 +876,12 @@ bool VisualBuilder::build()
     }
 
     // Create network definition
-    auto const stronglyTyped = 1U << static_cast<uint32_t>(nvinfer1::NetworkDefinitionCreationFlag::kSTRONGLY_TYPED);
-    auto network = std::unique_ptr<nvinfer1::INetworkDefinition>(builder->createNetworkV2(stronglyTyped));
+#if NV_TENSORRT_MAJOR >= 11
+    auto const networkFlags = 1U << static_cast<uint32_t>(nvinfer1::NetworkDefinitionCreationFlag::kSTRONGLY_TYPED);
+#else
+    auto const networkFlags = 0U;  // Default flags for TensorRT 10.x
+#endif
+    auto network = std::unique_ptr<nvinfer1::INetworkDefinition>(builder->createNetworkV2(networkFlags));
     if (!network)
     {
         LOG_ERROR("Failed to create network.");
@@ -899,7 +909,9 @@ bool VisualBuilder::build()
 
     // Create builder config
     auto config = std::unique_ptr<nvinfer1::IBuilderConfig>(builder->createBuilderConfig());
+#if NV_TENSORRT_MAJOR >= 11
     config->setFlag(nvinfer1::BuilderFlag::kMONITOR_MEMORY);
+#endif
     if (!config)
     {
         LOG_ERROR("Failed to create builder config.");

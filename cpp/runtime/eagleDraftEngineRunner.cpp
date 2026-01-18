@@ -148,6 +148,7 @@ EagleDraftEngineRunner::EagleDraftEngineRunner(
     mEngine = std::unique_ptr<nvinfer1::ICudaEngine>(
         mRuntime->deserializeCudaEngine(mmapReader->getData(), mmapReader->getSize()));
 
+#if NV_TENSORRT_MAJOR >= 11
     int64_t const execContextMemoryInBytes = mEngine->getDeviceMemorySizeV2();
     // Allocate device memory for the execution contexts. UINT8 is used to represent raw bytes.
     mExecContextMemory = rt::Tensor({execContextMemoryInBytes}, rt::DeviceType::kGPU, nvinfer1::DataType::kUINT8,
@@ -164,6 +165,12 @@ EagleDraftEngineRunner::EagleDraftEngineRunner(
     mGenerationExecutionContext->setDeviceMemoryV2(mExecContextMemory.rawPointer(), execContextMemoryInBytes);
     LOG_INFO("Allocated a shared device memory of %zu bytes for the prefill and generation contexts.",
         execContextMemoryInBytes);
+#else
+    // TensorRT 10.x: Use default execution context allocation (TRT manages memory internally)
+    mPrefillExecutionContext = std::unique_ptr<nvinfer1::IExecutionContext>(mEngine->createExecutionContext());
+    mGenerationExecutionContext = std::unique_ptr<nvinfer1::IExecutionContext>(mEngine->createExecutionContext());
+    LOG_INFO("Using TensorRT-managed execution context memory (TRT %d.x).", NV_TENSORRT_MAJOR);
+#endif
 
     bool setOptimizationProfileStatus{true};
     setOptimizationProfileStatus
