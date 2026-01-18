@@ -150,3 +150,16 @@ if(BUILD_UNIT_TESTS)
                                          ${CUDART_LIB} ${CUDA_DRIVER_LIB})
   add_cross_build_link_options(unitTest)
 endif()
+
+# Installation rules
+include(GNUInstallDirs)
+
+# Install executables
+install(
+  TARGETS llm_build llm_inference visual_build
+  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR})
+
+# Install TensorRT plugin shared library
+install(
+  TARGETS NvInfer_edgellm_plugin
+  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR})
