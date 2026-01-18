@@ -68,3 +68,25 @@ target_include_directories(NvInfer_edgellm_plugin
 target_link_libraries(NvInfer_edgellm_plugin commonLibraryExt edgellmKernels
                       ${CUDA_DRIVER_LIB})
 add_cross_build_link_options(NvInfer_edgellm_plugin)
+
+# Installation rules for static libraries
+install(
+  TARGETS edgellmCore edgellmBuilder edgellmTokenizer edgellmKernels
+  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+
+# Installation rules for public headers
+install(
+  DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/runtime/
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/tensorrt_edgellm/runtime
+  FILES_MATCHING
+  PATTERN "*.h")
+install(
+  DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/builder/
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/tensorrt_edgellm/builder
+  FILES_MATCHING
+  PATTERN "*.h")
+install(
+  DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/common/
+  DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/tensorrt_edgellm/common
+  FILES_MATCHING
+  PATTERN "*.h")
