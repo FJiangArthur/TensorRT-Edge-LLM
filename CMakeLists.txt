@@ -124,6 +124,9 @@ target_link_libraries(commonLibraryExt INTERFACE ${NVINFER_LIB} ${CUDART_LIB})
 target_link_options(commonLibraryExt INTERFACE
                     "-Wl,--unresolved-symbols=ignore-in-shared-libs")
 
+# Set up installation directories (must be before add_subdirectory calls that use them)
+include(GNUInstallDirs)
+
 # Build Core libraries of the project. attentionPlugin shared library and
 # edgellmCore/edgellmTokenizer/edgellmBuilder static library will be generated.
 add_subdirectory(cpp)
@@ -147,13 +150,11 @@ if(BUILD_UNIT_TESTS)
   target_compile_definitions(unitTest
                              PRIVATE PROJECT_ROOT_DIR="${CMAKE_SOURCE_DIR}")
   target_link_libraries(unitTest PRIVATE gtest gtest_main edgellmCore
-                                         ${CUDART_LIB} ${CUDA_DRIVER_LIB})
+                                         ${NVINFER_LIB} ${CUDART_LIB} ${CUDA_DRIVER_LIB})
   add_cross_build_link_options(unitTest)
 endif()
 
-# Installation rules
-include(GNUInstallDirs)
-
+# Installation rules for top-level targets
 # Install executables
 install(
   TARGETS llm_build llm_inference visual_build
